@@ -16,7 +16,7 @@
             #four {
                 font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
                 border-collapse: collapse;
-                width: 100%;
+                width: 90%;
             }
 
             #four td, #four th {
@@ -95,23 +95,39 @@
                 background-color: #ddd;
                 color: black;
             }
-
+            #button {
+                width: 35%;
+                color: black;
+                padding: 14px 20px;
+                margin: 8px 0;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                background-color: yellow;
+            }
+            #button:hover {
+                background-color: yellowgreen;
+            }
+            .download-button{
+                overflow: hidden;
+                background-color: transparent;
+            }
         </style>
     </head>
     <body>
         <div class="header"><!--div tag for header class -->
-                <h1>Student Profile</h1>
-            </div>
-            <div class="topnav">
-                <a href="index.html">Home</a>
-                <a href="mainmenu.jsp">Main Menu</a>
-                <a href="#">About Us</a>
-                <a href="searchstudent.jsp">Search Student</a>
-                <a href="contact.jsp">Contact</a>
-                <a href="logout.jsp">Logout</a>
-            </div>
-            <br>
-            <table id="four">
+            <h1>Student Profile</h1>
+        </div>
+        <div class="topnav">
+            <a href="index.html">Home</a>
+            <a href="mainmenu.jsp">Main Menu</a>
+            <a href="#">About Us</a>
+            <a href="searchstudent.jsp">Search Student</a>
+            <a href="contact.jsp">Contact</a>
+            <a href="logout.jsp">Logout</a>
+        </div>
+        <br>
+        <table id="four">
             <tr class="header">
                 <td><b>Application Number</b></td>
                 <td><b>Name On MarkSheet</b></td>
@@ -124,11 +140,17 @@
                 <td><b>College Code</b></td>
                 <td><b>Course</b></td>
                 <td><b>Papers</b></td>
-              <!--  <td><b>Select</b></td> -->
+                <!--  <td><b>Select</b></td> -->
             </tr>
             <%
+               
+                boolean inactive = true;
+                session.setMaxInactiveInterval(5*60);
+                
                 int counter = 1;
                 int a = Integer.parseInt(request.getParameter("searchoption"));
+                String c_code = session.getAttribute("studycenter").toString();
+                String p_name = session.getAttribute("programname").toString();
                 //System.out.println(a);
                 Connection con = MariaDB.getConnection();
                 Statement stm = con.createStatement();
@@ -136,29 +158,27 @@
                 switch (a) {
                     case 0:
                         String prn = request.getParameter("prnno");
-                         session.setAttribute("prn", prn);
-                        String sql = "SELECT APPLICATIONNUMBER, NAMEONMARKSHEET, MIDDLENAME, MOTHERNAME, USERNAME, PRN, ADMISSIONDATE, COLLEGE, CCODE, COURSE, PAPERS FROM admission_data WHERE PRN ='" + prn + "'";
+                        session.setAttribute("prn", prn);
+                        String sql = "SELECT APPLICATIONNUMBER, NAMEONMARKSHEET, MIDDLENAME, MOTHERNAME, USERNAME, PRN, ADMISSIONDATE, COLLEGE, CCODE, COURSE, PAPERS FROM admission_data WHERE CCODE = '"+c_code+"' AND PRN ='" + prn + "'";
                         try {
                             rs = stm.executeQuery(sql);
                             ResultSetMetaData rsmd = rs.getMetaData();
                             while (rs.next()) {
-                                %>
-                                
-                            <tr>
+            %>
+
+            <tr>
                 <%
                     for (int i = 1; i <= rsmd.getColumnCount(); i++) {
                 %>
                 <td><%=rs.getString(i)%></td>
-                
+
                 <%
                     }
-                    
+
                 %>
-             <!--   <td><a href="academicdetails.jsp">Select</a></td> -->
+                <!--   <td><a href="academicdetails.jsp">Select</a></td> -->
             </tr>
-            <%   
-                    
-                        }
+            <%                        }
                         con.close();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -167,7 +187,7 @@
                     break;
                 case 1:
                     String app = request.getParameter("appno");
-                    String sql1 = "SELECT APPLICATIONNUMBER, NAMEONMARKSHEET, MIDDLENAME, MOTHERNAME, USERNAME, PRN, ADMISSIONDATE, COLLEGE, CCODE, COURSE, PAPERS FROM admission_data WHERE APPLICATIONNUMBER = '" + app + "'";
+                    String sql1 = "SELECT APPLICATIONNUMBER, NAMEONMARKSHEET, MIDDLENAME, MOTHERNAME, USERNAME, PRN, ADMISSIONDATE, COLLEGE, CCODE, COURSE, PAPERS FROM admission_data WHERE CCODE = '"+c_code+"' AND APPLICATIONNUMBER = '" + app + "'";
                     try {
                         rs = stm.executeQuery(sql1);
                         ResultSetMetaData rsmd1 = rs.getMetaData();
@@ -181,20 +201,20 @@
                 <%
                     }
                 %>
-              <!--  <td><a href="">Select</a></td> -->
+                <!--  <td><a href="">Select</a></td> -->
             </tr>
             <%
                         }
                         con.close();
                     } catch (Exception e) {
-                    e.printStackTrace();
+                        e.printStackTrace();
                         out.println(e.getMessage());
                     }
                     break;
                 case 2:
                     String f_name = request.getParameter("fname");
                     String l_name = request.getParameter("lname");
-                    String sql2 = "SELECT APPLICATIONNUMBER, NAMEONMARKSHEET, MIDDLENAME, MOTHERNAME, USERNAME, PRN, ADMISSIONDATE, COLLEGE, CCODE, COURSE, PAPERS FROM admission_data WHERE LastName LIKE '%" + l_name + "%' AND FirstName LIKE '%" + f_name + "%' ORDER BY NAMEONMARKSHEET ASC";
+                    String sql2 = "SELECT APPLICATIONNUMBER, NAMEONMARKSHEET, MIDDLENAME, MOTHERNAME, USERNAME, PRN, ADMISSIONDATE, COLLEGE, CCODE, COURSE, PAPERS FROM admission_data WHERE CCODE = '"+c_code+"' AND LastName LIKE '" + l_name + "%' AND FirstName LIKE '" + f_name + "%' ORDER BY NAMEONMARKSHEET ASC";
                     try {
                         rs = stm.executeQuery(sql2);
                         ResultSetMetaData rsmd2 = rs.getMetaData();
@@ -208,11 +228,36 @@
                 <%
                     }
                 %>
-              <!--  <td><a href="">Select</a></td> -->
+                <!--  <td><a href="">Select</a></td> -->
+            </tr>
+            <%
+                        }
+                        con.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        out.println(e.getMessage());
+                    }
+                    break;
+                case 3:
+
+                    try {
+                        String sql3 = "SELECT APPLICATIONNUMBER, NAMEONMARKSHEET, MIDDLENAME, MOTHERNAME, USERNAME, PRN, ADMISSIONDATE, COLLEGE, CCODE, COURSE, PAPERS FROM admission_data WHERE CCODE = '" + c_code + "' AND COURSE = '" + p_name + "' ORDER BY NAMEONMARKSHEET ASC";
+                        rs = stm.executeQuery(sql3);
+                        ResultSetMetaData rsmd3 = rs.getMetaData();
+                        while (rs.next()) {
+            %>
+            <tr>
+                <%
+                    for (int i = 1; i <= rsmd3.getColumnCount(); i++) {
+                %>
+                <td><%=rs.getString(i)%></td>
+                <%
+                    }
+                %>
+                <!--  <td><a href="">Select</a></td> -->
             </tr>
             <%
                             }
-                            con.close();
                         } catch (Exception e) {
                             e.printStackTrace();
                             out.println(e.getMessage());
@@ -222,6 +267,7 @@
 
             %>
         </table>
+        <br>
         
     </body>
 </html>

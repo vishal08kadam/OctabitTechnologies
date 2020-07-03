@@ -107,6 +107,10 @@
                         $("#one").hide();
                         $("#two").hide();
                         $("#three").show();
+                    } else if(this.value === '3'){
+                        $("#one").hide();
+                        $("#two").hide();
+                        $("#three").hide();
                     }
                 });
 
@@ -136,6 +140,7 @@
                     <option value="0">Search By PRN Number</option>
                     <option value="1">Search By Application Number</option>
                     <option value="2">Search By Name</option>
+                    <option value="3">Get Student List</option>
                 </select>
             </div>
             <div id="one" name="one" style="display: none">
@@ -168,5 +173,12 @@
                 </div>
             <div class="columnside"></div>
             <div class="footer"></div>
+            <%
+                String ccode = request.getParameter("sc");
+                String prog = request.getParameter("program");
+                //System.out.println(ccode + prog);
+                session.setAttribute("studycenter", ccode);
+                session.setAttribute("programname", prog);
+            %>
     </body>
 </html>

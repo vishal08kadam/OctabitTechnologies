@@ -126,44 +126,50 @@
                 String Loggedperson = session.getAttribute("loggeduser").toString();
                 String time = session.getAttribute("time").toString();
                 //String studycenter = session.getAttribute("loggedusersc").toString();
-%>
+            %>
             <h3>Welcome <%=Loggedperson + ", Your Login time is " + time + "."/*+ " and you have access for " + studycenter + " this study center only."*/%></h3>
         </div>
         <div column middle>
             <form method="POST" action="searchstudent.jsp">
-            <div class="student-box">
-                <label><b>Select Study Center : </b></label>
-                <select style="width: 200px;" name="sc" id="sc" onchange="chg()">
-                    <option>--Select Study Center--</option>
-                    <%
-                        Connection sccon = MariaDB.getConnection();
-                        Statement scstm = sccon.createStatement();
-                        ResultSet sc;
-                        try {
-                            String sql = "SELECT DISTINCT(CCODE) FROM admission_data";
-                            sc = scstm.executeQuery(sql);
-                            while (sc.next()) {
-                    %>
-                    <option value="<%=sc.getString("CCODE")%>"><%=sc.getString("CCODE")%></option>
-                    <%
+                <div class="student-box">
+                    <label><b>Select Study Center : </b></label>
+                    <select style="width: 200px;" name="sc" id="sc" onchange="chg()">
+                        <option>--Select Study Center--</option>
+                        <%
+                            Connection sccon = MariaDB.getConnection();
+                            Statement scstm = sccon.createStatement();
+                            ResultSet sc;
+                            try {
+                                String sql1 = "SELECT SCASSIGNED FROM usersinfo WHERE UNAME = '" + Loggedperson + "'";
+                                sc = scstm.executeQuery(sql1);
+                                while (sc.next()) {
+                        %>
+                        <option value="<%=sc.getString("SCASSIGNED")%>"><%=sc.getString("SCASSIGNED")%></option>
+                        <%
+                                }
+                                sccon.close();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                out.println(e.getMessage());
                             }
-                            sccon.close();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            out.println(e.getMessage());
-                        }
-                    %>
-                </select>
-                <br>
-                <label><b>Select Program : </b></label>
-                <select style="width: 200px;" name="program" id="program">
-                    <option>--Select Course--</option>
-                </select>
-                <br><br>
-                <button id="button" type="submit">Proceed</button>
-                <button id="button" type="reset">Reset</button>
-            </div>
-                </form>
+                        %>
+                    </select> 
+                    <br>
+                    <label><b>Select Program : </b></label>
+                    <select style="width: 200px;" name="program" id="program">
+                        <option>--Select Course--</option>
+                    </select>
+                    <br><br>
+                    <button id="button" type="submit">Proceed</button>
+                    <button id="button" type="reset">Reset</button>
+                </div>
+            </form>
+            <%
+                
+                boolean inactive = true;
+                session.setMaxInactiveInterval(300);
+                
+            %>
         </div>
     </body>
 </html>
